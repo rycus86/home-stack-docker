@@ -14,7 +14,7 @@ x-nfs-volume-opts:
 services:
 
   registry:
-    image: rycus86/docker-registry:v2.6.2
+    image: rycus86/docker-registry
     deploy:
       replicas: 1
       labels:
