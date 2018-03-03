@@ -66,6 +66,6 @@ volumes:
       device: :/registry-data
 
 networks:
-  monitoring:
+  web:
     name: home-web
     external: true
