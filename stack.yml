@@ -1,0 +1,71 @@
+version: '3.5'
+
+x-log-options:
+  &log-options
+  fluentd-address: 192.168.0.52:24224
+  fluentd-async-connect: 'true'
+  fluentd-sub-second-precision: 'true'
+
+x-nfs-volume-opts:
+  &volume-options
+  type: nfs4
+  o: addr=192.168.0.52,rsize=8192,wsize=8192,timeo=15,hard,intr
+
+services:
+
+  registry:
+    image: rycus86/docker-registry
+    deploy:
+      replicas: 1
+      labels:
+        - routing-host=registry.viktoradam.net
+        - routing-port=5000
+        - routing-on-https=true
+        - routing-max-body=0
+    secrets:
+      - source: registry-auth
+        target: /auth/htpasswd
+    volumes:
+      - type: volume
+        source: ssl-certs
+        target: /etc/letsencrypt
+        read_only: true
+        volume:
+          nocopy: true
+      - registry-data:/var/lib/registry:nocopy
+    environment:
+      - REGISTRY_AUTH=htpasswd
+      - REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm
+      - REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd
+      - REGISTRY_HTTP_TLS_CERTIFICATE=/etc/letsencrypt/live/registry.viktoradam.net/fullchain.pem
+      - REGISTRY_HTTP_TLS_KEY=/etc/letsencrypt/live/registry.viktoradam.net/privkey.pem
+    networks:
+      - web
+    logging:
+      driver: 'fluentd'
+      options:
+        <<: *log-options
+        tag: app.registry
+
+secrets:
+  registry-auth:
+    name: registry-auth-${REGISTRY_AUTH_SECRET}
+    file: ./config/registry.auth.secret
+
+volumes:
+  ssl-certs:
+    driver: local
+    driver_opts:
+      <<: *volume-options
+      device: :/ssl-certs
+
+  registry-data:
+    driver: local
+    driver_opts:
+      <<: *volume-options
+      device: :/registry-data
+
+networks:
+  monitoring:
+    name: home-web
+    external: true
