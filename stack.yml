@@ -18,10 +18,10 @@ services:
     deploy:
       replicas: 1
       labels:
-        - routing-host=registry.viktoradam.net
-        - routing-port=5000
-        - routing-on-https=true
-        - routing-max-body=0
+        routing-host: registry.viktoradam.net
+        routing-port: 5000
+        routing-on-https: true
+        routing-max-body: 0
     secrets:
       - source: registry-auth
         target: /auth/htpasswd
