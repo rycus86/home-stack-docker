@@ -1,0 +1,19 @@
+@startuml
+
+frame "Docker stack" as stack {
+    [Docker registry] << rycus86/docker-registry >> as registry #8f8
+}
+
+frame "Web stack" as web_stack {
+    [Nginx reverse proxy] << nginx >> as nginx #9cc
+}
+
+frame "Logging stack" {
+    [Fluentd] #ccc
+}
+
+nginx --> registry : registry.viktoradam.net
+
+registry ..> [Fluentd] : Send logs
+
+@enduml
