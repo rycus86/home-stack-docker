@@ -47,6 +47,21 @@ services:
         <<: *log-options
         tag: app.registry
 
+  docker-manager:
+    image: rycus86/socat
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        parallelism: 1
+        order: start-first
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - docker
+
 secrets:
   registry-auth:
     name: registry-auth-${REGISTRY_AUTH_SECRET}
@@ -68,4 +83,7 @@ volumes:
 networks:
   web:
     name: home-web
+    external: true
+  docker:
+    name: home-docker
     external: true

@@ -2,6 +2,9 @@
 
 frame "Docker stack" as stack {
     [Docker registry] << rycus86/docker-registry >> as registry #8f8
+    [Socat] << rycus86/docker-socat >> as socat #88f
+
+    [Docker engine] << unix: >> as engine #f88
 }
 
 frame "Web stack" as web_stack {
@@ -12,8 +15,15 @@ frame "Logging stack" {
     [Fluentd] #ccc
 }
 
+frame "Other stacks" #888 {
+    [Other components] as others #ccc
+}
+
 nginx --> registry : registry.viktoradam.net
 
 registry ..> [Fluentd] : Send logs
+
+socat --> engine : Expose connection\nfor the Swarm manager
+others .> socat : Connect to Docker\nSwarm manager
 
 @enduml
