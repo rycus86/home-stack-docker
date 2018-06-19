@@ -57,8 +57,9 @@ services:
       update_config:
         parallelism: 1
         order: start-first
-      limits:
-        memory: 32M
+      resources:
+        limits:
+          memory: 32M
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
