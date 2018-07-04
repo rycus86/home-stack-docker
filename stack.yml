@@ -17,6 +17,9 @@ services:
     image: rycus86/docker-registry
     deploy:
       replicas: 1
+      resources:
+        limits:
+          memory: 32M
       labels:
         routing-host: registry.viktoradam.net
         routing-port: 5000
@@ -51,6 +54,9 @@ services:
     image: rycus86/docker-socat
     deploy:
       replicas: 1
+      resources:
+        limits:
+          memory: 16M
       placement:
         constraints:
           - node.role == manager
